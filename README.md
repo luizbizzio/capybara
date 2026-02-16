@@ -13,5 +13,7 @@ Welcome to **Capybara Game**, a lighthearted web game where your only mission is
 Play it here: [Capybara Game](https://capybara-game.vercel.app/)
 
 ## License 📄
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](./LICENSE).
+
+Commercial use, resale, and paid services are not permitted.
 
