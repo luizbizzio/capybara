@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/png" href="public/favicon.png" />
+    <title>Capybara Click</title>
+    <style>
+      :root {
+        --panel-bg: rgba(0,0,0,.48);
+        --panel-fg: rgba(255,255,255,.92);
+        --btn-bg: rgba(255,255,255,.92);
+        --btn-fg: rgba(0,0,0,.9);
+        --btn2-bg: rgba(255, 80, 80, .92);
+        --btn2-fg: rgba(0,0,0,.9);
+        --shadow: 0 14px 26px rgba(0,0,0,.35);
+        --radius: 14px;
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        user-select: none;
+        background: #000;
+      }
+
+      .root {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        background: url("public/background.jpg") center/cover no-repeat;
+      }
+
+      .root.screenShake {
+        animation: screenShake 120ms infinite;
+      }
+
+      @keyframes screenShake {
+        0% { transform: translate3d(0, 0, 0); }
+        25% { transform: translate3d(1.5px, -1.5px, 0); }
+        50% { transform: translate3d(-1.5px, 1.5px, 0); }
+        75% { transform: translate3d(1.5px, 1.5px, 0); }
+        100% { transform: translate3d(-1.5px, -1.5px, 0); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .root.screenShake { animation: none; }
+      }
+
+      .hud {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .hud > * {
+        pointer-events: auto;
+      }
+
+      .panel {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: var(--radius);
+        background: var(--panel-bg);
+        color: var(--panel-fg);
+        backdrop-filter: blur(8px);
+        box-shadow: var(--shadow);
+      }
+
+      .stat {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        font-weight: 700;
+      }
+
+      .stat span {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-weight: 800;
+        cursor: pointer;
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        touch-action: manipulation;
+      }
+
+      .btnDanger {
+        background: var(--btn2-bg);
+        color: var(--btn2-fg);
+      }
+
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+      }
+
+      .toggle input {
+        width: 18px;
+        height: 18px;
+        accent-color: white;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 6;
+      }
+
+      .card {
+        width: min(520px, calc(100vw - 32px));
+        background: rgba(0,0,0,.58);
+        color: rgba(255,255,255,.93);
+        border-radius: 18px;
+        padding: 18px;
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+
+      .title {
+        margin: 0 0 8px 0;
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: .2px;
+      }
+
+      .sub {
+        margin: 0 0 14px 0;
+        opacity: .92;
+        line-height: 1.35;
+      }
+
+      .row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .capyWrap {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        z-index: 4;
+        transform: translate3d(0,0,0) scale(var(--capyScale, 1));
+        will-change: transform, left, top;
+        transition: transform 120ms ease;
+      }
+
+      .capyWrap.endPulse {
+        animation: pulse 520ms ease-in-out infinite;
+      }
+
+      .capy {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        cursor: pointer;
+        transform: scaleX(var(--capyFlip, 1));
+        filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      @keyframes pulse {
+        0% { transform: translate3d(0,0,0) scale(calc(var(--capyScale, 1) * 1)); }
+        50% { transform: translate3d(0,0,0) scale(calc(var(--capyScale, 1) * 1.06)); }
+        100% { transform: translate3d(0,0,0) scale(calc(var(--capyScale, 1) * 1)); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .capyWrap { transition: none; }
+        .capyWrap.endPulse { animation: none; }
+      }
+
+      .videoOverlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,.92);
+        z-index: 10;
+        display: grid;
+        grid-template-rows: 1fr auto;
+      }
+
+      .videoBox {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000;
+      }
+
+      .videoBar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 14px;
+        border-top: 1px solid rgba(255,255,255,.10);
+      }
+
+      .videoText {
+        color: rgba(255,255,255,.88);
+        font-weight: 800;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="root" id="root">
+      <div class="hud">
+        <div class="panel">
+          <div class="stat">Time: <span id="time">45</span>s</div>
+          <div class="stat">Score: <span id="score">0</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="controls">
+            <label class="toggle" title="Checkbox only mutes/unmutes during the game">
+              <input id="musicToggle" type="checkbox" checked />
+              Music
+            </label>
+            <button class="btn btnDanger hidden" id="stopBtn">Stop</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay" id="startOverlay">
+        <div class="card">
+          <p class="title">Capybara Click</p>
+          <p class="sub">Catch the Capybara</p>
+          <div class="row">
+            <button class="btn" id="startBtn">Start</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="capyWrap hidden" id="capyWrap" style="left: 40px; top: 240px; --capyScale: 1; --capyFlip: 1;">
+        <img class="capy" id="capyImg" src="public/capybara.png" alt="capybara" draggable="false" />
+      </div>
+
+      <div class="videoOverlay hidden" id="videoOverlay">
+        <div class="videoBox">
+          <video class="video" id="endVideo" src="public/video.mp4" playsinline preload="auto"></video>
+        </div>
+        <div class="videoBar">
+          <div class="videoText">Finished</div>
+          <div class="row">
+            <button class="btn" id="replayBtn">Play again</button>
+          </div>
+        </div>
+      </div>
+
+      <audio id="clickSound" src="public/click-sound.mp3" preload="auto"></audio>
+      <audio id="song" src="public/song.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+      const rootEl = document.getElementById("root");
+
+      const timeEl = document.getElementById("time");
+      const scoreEl = document.getElementById("score");
+
+      const startOverlay = document.getElementById("startOverlay");
+      const startBtn = document.getElementById("startBtn");
+
+      const stopBtn = document.getElementById("stopBtn");
+      const replayBtn = document.getElementById("replayBtn");
+
+      const capyWrap = document.getElementById("capyWrap");
+      const capyImg = document.getElementById("capyImg");
+
+      const videoOverlay = document.getElementById("videoOverlay");
+      const endVideo = document.getElementById("endVideo");
+
+      const clickSound = document.getElementById("clickSound");
+      const song = document.getElementById("song");
+      const musicToggle = document.getElementById("musicToggle");
+
+      const DURATION_MS = 45000;
+      const VIDEO_EARLY_MS = 1200;
+
+      let phase = "idle"; // idle | playing | ending | ended
+      let score = 0;
+
+      let startTs = 0;
+      let lastSecondShown = 45;
+
+      let nextMoveAt = 0;
+      let rafId = 0;
+
+      let videoStartedEarly = false;
+
+      const rand = (min, max) => Math.random() * (max - min) + min;
+      const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+      const setUI = (secondsLeft) => {
+        timeEl.textContent = String(secondsLeft);
+        scoreEl.textContent = String(score);
+      };
+
+      const tryPlay = (a) => {
+        if (!a) return;
+        const p = a.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      };
+
+      const stopAndReset = (a) => {
+        if (!a) return;
+        a.pause();
+        a.currentTime = 0;
+      };
+
+      const setMusicVolume = (on) => {
+        song.volume = on ? 1 : 0;
+      };
+
+      const startMusicFromBeginning = () => {
+        song.loop = true;
+        song.currentTime = 0;
+        setMusicVolume(musicToggle.checked);
+        tryPlay(song);
+      };
+
+      const stopMusic = () => {
+        stopAndReset(song);
+      };
+
+      const stopLoop = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+      };
+
+      const computeMoveInterval = (msLeft) => {
+        const t = 1 - clamp(msLeft / DURATION_MS, 0, 1);
+        const slow = 900;
+        const fast = 520;
+        return Math.round(slow + (fast - slow) * t);
+      };
+
+      const moveCapybara = () => {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        const size = 140;
+        const paddingTop = 70;
+        const maxX = Math.max(0, vw - size);
+        const maxY = Math.max(paddingTop, vh - size);
+
+        const x = clamp(rand(0, maxX), 0, maxX);
+        const y = clamp(rand(paddingTop, maxY), paddingTop, maxY);
+
+        const scale = rand(0.92, 1.18).toFixed(3);
+        const flip = Math.random() < 0.5 ? -1 : 1;
+
+        capyWrap.style.left = x + "px";
+        capyWrap.style.top = y + "px";
+        capyWrap.style.setProperty("--capyScale", scale);
+        capyWrap.style.setProperty("--capyFlip", String(flip));
+      };
+
+      const setEndEffects = (secondsLeft) => {
+        const shouldPulse = secondsLeft <= 8 && secondsLeft > 0;
+        capyWrap.classList.toggle("endPulse", shouldPulse);
+      };
+
+      const setShake = (secondsLeft) => {
+        const shouldShake = secondsLeft <= 31 && secondsLeft > 0;
+        rootEl.classList.toggle("screenShake", shouldShake);
+      };
+
+      const updateHue = (now, secondsLeft) => {
+        if (secondsLeft <= 11 && secondsLeft > 0) {
+          const hue = ((now * 0.22) % 360).toFixed(2);
+          rootEl.style.filter = "hue-rotate(" + hue + "deg)";
+          return;
+        }
+        rootEl.style.filter = "";
+      };
+
+      const startVideoEarly = () => {
+        if (phase !== "playing") return;
+        if (videoStartedEarly) return;
+
+        videoStartedEarly = true;
+        phase = "ending";
+
+        stopMusic();
+
+        capyWrap.classList.add("hidden");
+        stopBtn.classList.add("hidden");
+        rootEl.classList.remove("screenShake");
+        rootEl.style.filter = "";
+
+        videoOverlay.classList.remove("hidden");
+        endVideo.controls = false;
+        endVideo.muted = false;
+        endVideo.volume = 1;
+        endVideo.currentTime = 0;
+
+        tryPlay(endVideo);
+      };
+
+      const endGame = () => {
+        if (phase !== "playing" && phase !== "ending") return;
+
+        phase = "ended";
+        stopLoop();
+
+        stopMusic();
+
+        capyWrap.classList.add("hidden");
+        stopBtn.classList.add("hidden");
+        rootEl.classList.remove("screenShake");
+        rootEl.style.filter = "";
+
+        videoOverlay.classList.remove("hidden");
+        endVideo.controls = true;
+
+        if (!videoStartedEarly) {
+          endVideo.muted = false;
+          endVideo.volume = 1;
+          endVideo.currentTime = 0;
+          tryPlay(endVideo);
+        }
+      };
+
+      const tick = (now) => {
+        if (phase !== "playing" && phase !== "ending") return;
+
+        const elapsed = now - startTs;
+        const msLeft = Math.max(0, DURATION_MS - elapsed);
+        const secondsLeft = Math.ceil(msLeft / 1000);
+
+        if (phase === "playing") {
+          updateHue(now, secondsLeft);
+        }
+
+        if (phase === "playing" && msLeft > 0 && msLeft <= VIDEO_EARLY_MS) {
+          startVideoEarly();
+        }
+
+        if (secondsLeft !== lastSecondShown) {
+          lastSecondShown = secondsLeft;
+          setUI(secondsLeft);
+
+          if (phase === "playing") {
+            setEndEffects(secondsLeft);
+            setShake(secondsLeft);
+          }
+        }
+
+        if (msLeft <= 0) {
+          setUI(0);
+          rootEl.classList.remove("screenShake");
+          rootEl.style.filter = "";
+          endGame();
+          return;
+        }
+
+        if (phase === "playing" && now >= nextMoveAt) {
+          moveCapybara();
+          nextMoveAt = now + computeMoveInterval(msLeft);
+        }
+
+        rafId = requestAnimationFrame(tick);
+      };
+
+      const startGame = () => {
+        if (phase !== "idle") return;
+
+        phase = "playing";
+        score = 0;
+        videoStartedEarly = false;
+
+        startOverlay.classList.add("hidden");
+        videoOverlay.classList.add("hidden");
+        capyWrap.classList.remove("hidden");
+        stopBtn.classList.remove("hidden");
+
+        capyWrap.classList.remove("endPulse");
+        rootEl.classList.remove("screenShake");
+        rootEl.style.filter = "";
+
+        stopAndReset(endVideo);
+        endVideo.controls = false;
+        endVideo.muted = false;
+        endVideo.volume = 1;
+
+        startTs = performance.now();
+        lastSecondShown = 45;
+        setUI(45);
+        setEndEffects(45);
+        setShake(45);
+
+        moveCapybara();
+        nextMoveAt = performance.now() + 700;
+
+        startMusicFromBeginning();
+
+        stopLoop();
+        rafId = requestAnimationFrame(tick);
+      };
+
+      const stopGame = () => {
+        if (phase === "idle") return;
+
+        phase = "idle";
+        stopLoop();
+
+        stopMusic();
+
+        capyWrap.classList.add("hidden");
+        videoOverlay.classList.add("hidden");
+        startOverlay.classList.remove("hidden");
+
+        stopBtn.classList.add("hidden");
+
+        capyWrap.classList.remove("endPulse");
+        rootEl.classList.remove("screenShake");
+        rootEl.style.filter = "";
+
+        stopAndReset(endVideo);
+        endVideo.controls = false;
+
+        videoStartedEarly = false;
+
+        score = 0;
+        setUI(45);
+      };
+
+      const replay = () => {
+        stopGame();
+        startGame();
+      };
+
+      const onCapyHit = () => {
+        if (phase !== "playing") return;
+
+        score += 1;
+        scoreEl.textContent = String(score);
+
+        clickSound.currentTime = 0;
+        tryPlay(clickSound);
+
+        moveCapybara();
+      };
+
+      capyImg.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        onCapyHit();
+      });
+
+      startBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        startGame();
+      });
+
+      stopBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        stopGame();
+      });
+
+      replayBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        replay();
+      });
+
+      musicToggle.addEventListener("change", () => {
+        setMusicVolume(musicToggle.checked);
+        if (phase === "playing") tryPlay(song);
+      });
+
+      window.addEventListener("resize", () => {
+        if (phase === "playing") moveCapybara();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (phase === "playing") stopGame();
+        }
+      });
+
+      window.addEventListener("beforeunload", () => {
+        stopLoop();
+        stopAndReset(song);
+        stopAndReset(endVideo);
+      });
+
+      setMusicVolume(musicToggle.checked);
+      stopAndReset(endVideo);
+      endVideo.controls = false;
+      videoOverlay.classList.add("hidden");
+      rootEl.classList.remove("screenShake");
+      rootEl.style.filter = "";
+      setUI(45);
+    </script>
+  </body>
+</html>
