@@ -43,6 +43,4 @@ There are no plans for active development or new features.
 ## License 📄
 
 This project is licensed under the  
-**PolyForm Noncommercial License 1.0.0**.
-
-Commercial use, resale, and paid services are not permitted.
+**Apache 2.0 License**.
