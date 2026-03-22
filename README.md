@@ -1,4 +1,4 @@
-# Capybara 🐾
+<h1 align="center">Capybara Game </h1>
 
 **Capybara Game** is a small, casual web game where the goal is simple:  
 click the capybara as many times as possible before the time runs out.
