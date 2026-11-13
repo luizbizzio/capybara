@@ -19,7 +19,7 @@ It was made purely for fun.
 
 The game is available online and can be played directly in the browser:
 
-👉 https://capybara-game.pages.dev/
+👉 https://capybara.luizbizzio.com/
 
 No installation or setup is required.
 
