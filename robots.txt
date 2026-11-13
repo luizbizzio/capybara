@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://capybara.luizbizzio.com/sitemap.xml

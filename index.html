@@ -2,9 +2,65 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="icon" type="image/png" href="public/favicon.png" />
-    <title>Capybara Click</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Capybara Click | Free Capybara Game Online</title>
+    <meta name="description" content="Play Capybara Click, a free online capybara game. Catch the moving capybara and score as many clicks as you can in 45 seconds. No download needed." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#1f321b" />
+    <link rel="canonical" href="https://capybara.luizbizzio.com/" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/public/favicon.png" />
+    <link rel="apple-touch-icon" href="/public/favicon.png" />
+
+    <!-- Social sharing: Facebook, Discord, LinkedIn and similar platforms -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Capybara Click" />
+    <meta property="og:title" content="Capybara Click | Free Online Capybara Game" />
+    <meta property="og:description" content="Catch the moving capybara! You have 45 seconds to score as many clicks as possible. Play free in your browser." />
+    <meta property="og:url" content="https://capybara.luizbizzio.com/" />
+    <meta property="og:image" content="https://capybara.luizbizzio.com/public/social-preview.jpg" />
+    <meta property="og:image:secure_url" content="https://capybara.luizbizzio.com/public/social-preview.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Capybara Click game preview featuring a capybara in a colorful landscape" />
+
+    <!-- X/Twitter large-card preview -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Capybara Click | Free Online Capybara Game" />
+    <meta name="twitter:description" content="You have 45 seconds to click the moving capybara as many times as you can. Play free online." />
+    <meta name="twitter:image" content="https://capybara.luizbizzio.com/public/social-preview.jpg" />
+    <meta name="twitter:image:alt" content="Capybara Click game preview" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "VideoGame",
+    "WebApplication"
+  ],
+  "@id": "https://capybara.luizbizzio.com/#game",
+  "name": "Capybara Click",
+  "description": "Play Capybara Click, a free online capybara game. Catch the moving capybara and score as many clicks as you can in 45 seconds. No download needed.",
+  "url": "https://capybara.luizbizzio.com/",
+  "image": "https://capybara.luizbizzio.com/public/social-preview.jpg",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "JavaScript enabled",
+  "gamePlatform": "Web browser",
+  "genre": [
+    "Casual",
+    "Clicker"
+  ],
+  "playMode": "SinglePlayer",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+    </script>
     <style>
       :root {
         --panel-bg: rgba(0,0,0,.48);
@@ -33,6 +89,10 @@
         width: 100vw;
         height: 100vh;
         background: url("public/background.jpg") center/cover no-repeat;
+        background-image: image-set(
+          url("public/background.webp") type("image/webp"),
+          url("public/background.jpg") type("image/jpeg")
+        );
       }
 
       .root.screenShake {
@@ -263,8 +323,8 @@
 
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <p class="title">Capybara Click</p>
-          <p class="sub">Catch the Capybara</p>
+          <h1 class="title">Capybara Click</h1>
+          <p class="sub">Catch the moving capybara! Click or tap it as many times as you can in 45 seconds.</p>
           <div class="row">
             <button class="btn" id="startBtn">Start</button>
           </div>
