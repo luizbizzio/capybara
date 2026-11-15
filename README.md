@@ -3,13 +3,15 @@
 **Capybara Game** is a small, casual web game where the goal is simple:  
 click the capybara as many times as possible before the time runs out.
 
+<img src="assets/capybara-demo.png" alt="Capybara Demo" width="1200"/>
+
 Each click increases your score by +1.  
 There are no complex rules, no progression system, and no competition.  
 It was made purely for fun.
 
 <br>
 
-<div align="left">
+<div align="center">
   <img src="public/capybara.png" alt="Capybara" width="20%" />
 </div>
 
